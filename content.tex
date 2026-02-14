@@ -2,24 +2,84 @@
 
 \id{Summarize the assignment, how it went, general impressions, etc. Delete these blue comments from the final version of your report.}
 
-\section{Requirements traceability}
 
-\begin{table}[h] 
-    {\small
-    \begin{tabular}{@{}p{2cm}p{2cm}p{2cm}p{8cm}@{}}
-        \toprule
-        \multicolumn{1}{c}{\textbf{Req ID}} & \multicolumn{1}{c}{\textbf{Status}} & \multicolumn{1}{c}{\textbf{Implemented in}} & \multicolumn{1}{c}{\textbf{Design considerations}} \\
-        R1.1 & \{Missing, Partial, Implemented\} & \code{MapSetup.java} & The software sets up the same map by a hard-wired specification. The specification is given in the \code{MapSetup} class' \code{tiles} data structure and used in the \code{generateMap()} method at the initialization phase of the program. \\
-        ... & ... & ...  & ... \\ \bottomrule
-    \end{tabular}}
-\end{table}
 
-\id{The goal of this matrix is to aid your TA verify the satisfaction of requirements. If the table is superficial or too verbose, your TA will have a hard time verifying the completeness of your deliverable, and that will result in lost marks.
-Use the Mising-Partial-Implemented status markers in your final report. Use the code{} command to format file names and Java code elements, such as class names, method names, etc.}
+\newpage
 
 \section{Model syntax}
 
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|p{4cm}|p{4cm}|p{7cm}|}
+    \hline
+    \textbf{Concrete syntax} & \textbf{Abstract syntax} & \textbf{Well-formedness rule} \\
+    \hline
+    
+    Rectangle & Thing & Must have a name written in it \\
+    \hline
+    
+    Parallelogram & Abstract thing & Must have a name written in it, italicized \\
+    \hline
+    
+    Arrow with filled triangle & Directed relationship (has-a relationship) & Must be drawn between two Things and can be circular \\
+    \hline
+    
+    Arrow with empty triangle & Specialization (is-a relationship) & Must be drawn between two Things and must not be circular \\
+    \hline
+    
+    Arrow with diamond & Aggregation (whole-part relationship) & Must be drawn between two Things \\
+    \hline
+    
+    Label on an arrow & Name and cardinality of a relationship & Must have only one name and one cardinality per relationship \\
+    \hline
+    
+    Cardinality (1) & Exactly 1-to-1 association & Each instance of one Thing is associated with only one instance of another Thing \\
+    \hline
+    
+    Cardinality (N) & 1-to-N association & Each instance of one Thing may be associated with multiple instances of another Thing \\
+    \hline
+    
+    \end{tabular}
+\end{table}   
 
+The syntax of the models is defined by the concrete syntax, abstract syntax, and well-formedness rules. Above is a table summarizing these aspects for our UML class diagrams.
+
+\textbf{Translational semantics}
+
+The translational semantics of the models is defined by the mapping between the concrete syntax and Java code concepts. Below is a table summarizing this mapping for our UML class diagrams:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|p{5cm}|p{9cm}|}
+    \hline
+    \textbf{Concrete syntax} & \textbf{Java Code Concept} \\
+    \hline
+    
+    Rectangle & Class \\
+    \hline
+    
+    Parallelogram & Abstract Class \\
+    \hline
+    
+    Arrow with empty triangle & Inheritance (\texttt{extends}) \\
+    \hline
+    
+    Arrow with filled triangle & Association (instance field) \\
+    \hline
+    
+    Arrow with diamond & Aggregation (field + constructor parameter) \\
+    \hline
+    
+    Label on an arrow & Relationship name (field name) \\
+    \hline
+    
+    Cardinality (1) & 1-to-1 relationship (instantiated once) \\
+    \hline
+    
+    Cardinality (N) & 1-to-many relationship (instantiated as list) \\
+    \hline
+    \end{tabular}
+\end{table}    
 
 \newpage
 
@@ -88,11 +148,6 @@ Else if cell.style contains “rounded=0”:
 			label[cell.id] ← empty ArrayListla
 		append (cell.value, cell.parent) to label[cell.id]
 
-
-
-
-        
-
 //GENERATE CLASS FILES
 For each thingType in things: 
 	For each (value, thingId) in things[thingType]
@@ -147,7 +202,7 @@ In order to extract the necessary information from the XML file, we read the ent
 
 After the information was extracted and organized, a separate class was used to analyze that information by using the Extraction API. First, it creates a .java file for every detected class or abstract class and writes the corresponding declaration (abstract or normal) with an empty body. Then, it processes the inheritance relationships and updates all the required child classes so they can extend their parent class. Next, it handles associations and aggregations by adding attributes to the source class based on multiplicity: a single object for 1 and a List for N. Finally, all the generated classes are written to the output directory, which is possible with FileWriter.
 
-The pseudocode logic was not taken from a textbook or external source, but rather it was developed independently after examining the contents of the XML file and determining patterns that recurred with the same type of objects/relations. In a previous course, 2OP3 (Object-Oriented Programming), we learned how to use a FileReader to read data from a file. However, the actual classification and analyzing logic used in this algorithm was independently designed by us.
+The pseudocode logic was not taken from a textbook or external source, but rather it was developed independently after examining the contents of the XML file and determining patterns that recurred with the same type of objects/relations. In a previous course, 2OP3 (Object-Oriented Programming), we learned to use a FileReader to read data from a file. However, the actual classification and analyzing logic used in this algorithm was our design.
 
 \newpage
 
