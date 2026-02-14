@@ -17,21 +17,38 @@
 \id{The goal of this matrix is to aid your TA verify the satisfaction of requirements. If the table is superficial or too verbose, your TA will have a hard time verifying the completeness of your deliverable, and that will result in lost marks.
 Use the Mising-Partial-Implemented status markers in your final report. Use the code{} command to format file names and Java code elements, such as class names, method names, etc.}
 
-\section{Design}
+\section{Model a small domain in a drawing tool}
 
-\id{Elaborate on the design phase. Present models if applicable.}
+\textbf{Document the syntax of your model. This should be, basically, a list in which
+enumerate every shape, arrow, etc and explain what they are. This is the concrete
+syntax, i.e., what do we see when we look at the model. You should define the
+abstract syntax, too, i.e., the underlying essential concepts and their relationships.}
 
-\section{Implementation}
+\section{Propose an algorithm to translate models described in your syntax to Java or
+Python code}
 
-\id{Elaborate on the implementation phase.}
+\textbf{Document the algorithm in a pseudocode and explain it briefly. Did you draw on a
+previously studied content? If so, which course? If not, did you find the algorithm
+somewhere or did you come up with it?}
 
-\section{Testing and QA}
+\section{Implement a proof-of-concept solution}
 
-\id{Elaborate on how you validated the deliverable.}
+
 
 \section{Reflections}
 
-\id{Answer the questions in the assignment.}
+\textbf{Assess the complexity of extending your code generator to generate code in the other language: in Python, if you generated Java code in Tasks 2-3; and Java, if you generated Python code in Tasks 2-3. Would this be a complex task or a fairly straightforward one? How about generating C code? What is the main difference between extending your generator to Java or Python vs to C?}
+
+Extending the code generator in Python instead of Java would be fairly simple. The overall structure of classes, inheritance, and fields is similar. The main change would be adjusting syntax, such as removing type declarations, changing constructors, and adapting list structures. The conceptual model to code would remain mostly the same. 
+Generating Java or Python is easier than C. C does not support classes, inheritance, or objects directly so many concepts in this model would need to be simulated using structure, function pointer, and memory management. This makes the translation more complex and less direct. Java and Python are OOP languages, which map naturally to class diagrams, while C is primarily procedural, so the conceptual model does not translate so easily. 
+
+\textbf{Code generators for common design formalisms (e.g., Class Diagrams to Java, Simulunk to C) are readily available. There are domains, however, in which new design formalisms pop up frequently (in order to support experts in expressing their designs in new ways). Such design languages and their supporting tooling are developed in so-called “language workbenches.” Research the Eclipse ecosystem to find the two top language workbenches. One of them allows you to define visual formalisms, the other one allows you to design textual formalisms. The latter are very similar to programming languages. In fact, they can integrate with them (not just generate code for them). Which are these two language workbenches and how would you use them in your term assignment (Catan)?}
+
+Two major language workbenches in the Eclipse ecosystem are Sirius Web and Capella. 
+Sirius Web is a web-based tool used to create visual modelling languages and domain specific languages (DSLs). It allows developers to design custom diagrams and modelling environments for specific systems. 
+Capella is an open-source Model-Based Systems Engineering (MBSE) tool that supports system modelling using the Arcadia method. It provides a structured environment for designing complex systems. 
+In Catan, these tools could be used to visually model components like players, tiles, buildings, and relationships before writing that Java code. They could help organize the system design and potentially generate parts of the code. This would make the design clearer, more structured and easier to extend if the game became more complex. 
+
 
 \section{Roles and responsibilities}
 
