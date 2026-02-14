@@ -60,6 +60,56 @@ arrows[“inheritance”] ← empty ArrayList
 arrows[“aggregation”] ← empty ArrayList
 arrows[“association”] ← empty ArrayList
 
+//GENERATE CLASS FILES
+For each thingType in things: 
+	For each (value, thingId) in things[thingType]
+		Create a new file named value +“.java”//CREATE JAVA FILE PER THING
+		//WRITE CLASS DECLARATION DEPENDING ON CLASS TYPE
+		If thingType == “abstract”:
+			Write “public abstract class ” + value
+		Else:
+			Write “public class ” + value
+		//WRITE EMPTY CLASS BODY
+		Write “{”
+		Write “}”
+
+//HANDLE INHERITANCE RELATIONSHIP
+For each arrowId in arrows[“inheritance”]
+	//IDENTIFY THE SOURCE AND TARGET THINGS OF THE INHERITANCE RELATIONSHIP
+	sourceThingId ← arrow.source
+	targetThingId ← arrow.target
+	Child ←  thing with id sourceThingId
+	Parent ← thing with id targetThingId
+	Update child class declaration: //UPDATE CHILD CLASS TO EXTEND PARENT
+		“extends parent”
+
+//HANDLE ASSOCIATIONS AND AGGREGATIONS
+For each arrowType in[“association”, “aggregation”]:
+	For each arrowId in arrows[arrowType]:
+		//IDENTIFY THE SOURCE AND TARGET THINGS OF RELATIONSHIP
+		sourceThingId ← arrow.source
+		targetThingId ← arrow.target
+source ← thing with id sourceThingId
+		target ←  thing with id targetThingId
+		//WRITE RELATIONSHIP NAME AND CARDINALITY FROM LABELS 
+relationshipName ←  label value for arrowId
+cardinality ← cardinality label for arrowId
+//GENERATE FIELDS BASED ON CARDINALITY
+If cardinality == “1”:
+	Add field to source class:
+		“Private target relationshipName;”
+Else if cardinality == “N”:
+	Add field to source class:
+		“Private List<target> relationshipName;”
+
+//AGGREGATION IMPLIES OWNERSHIP, SO INCLUDE TARGET IN CONSTRUCTOR
+	If arrowType == “aggregation”:
+		Add target as a constructor parameter in source class
+
+//WRITE ALL GENERATED JAVA FILES TO THE OUTPUT
+Write all generated  .java files to output directory
+
+
 \end{verbatim}
 
 In order to extract the necessary information from the XML file, we read the entire file and organize all the information into structured data via Maps so it could be used to later write the Java files. There are 3 main maps: things, arrows, and labels. The things Map stores UML objects (rectangles or parallelograms), and keeps them separate as normal classes or abstract respectively. The arrows Map stores relationships between classes by inspecting the style of the object. The labels Map stores the associated labels attached to arrows, such as its cardinality or other descriptive text. Overall, the main loop iterates through every element in the diagram and classifies it as either a class, abstract class, relationship, or relationship label. 
