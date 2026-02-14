@@ -4,7 +4,7 @@
 
 \section{Requirements traceability}
 
-\begin{table}[h]
+\begin{table}[h] 
     {\small
     \begin{tabular}{@{}p{2cm}p{2cm}p{2cm}p{8cm}@{}}
         \toprule
@@ -20,6 +20,8 @@ Use the Mising-Partial-Implemented status markers in your final report. Use the 
 \section{Model syntax}
 
 
+
+\newpage
 
 \section{Algorithm to translate models code}
 
@@ -59,6 +61,37 @@ things[“class”] ← empty ArrayList
 arrows[“inheritance”] ← empty ArrayList
 arrows[“aggregation”] ← empty ArrayList
 arrows[“association”] ← empty ArrayList
+
+// main loop
+For each cell in mxCells:
+	// ARROWS
+	If cell.style contains “edgeStyle=orthogonalEdgeStyle”:
+		// aggregation - diamond
+		If cell.style contains “startArrow=diamondThin”:
+			append cell.id to arrows[“aggregation”]
+		// inheritance - open arrow
+		Else if cell.style contains “endFill=0”:
+			append cell.id to arrows[“inheritance”]
+// association (has) - plain line
+Else:
+			append cell.id to arrows[“association”]
+
+	// ABSTRACT CLASSES (parallelogram)
+	Else if cell.style contains “shape=parallelogram”:
+append (cell.value, cell.id) to things["abstract"]
+// CLASSES (rectangle)
+Else if cell.style contains “rounded=0”:
+	append (cell.value, cell.id) to things["class"]
+	// LABEL
+	Else if cell.style contains “edgeLabel”:
+		If label[cell.id] does not exist:
+			label[cell.id] ← empty ArrayListla
+		append (cell.value, cell.parent) to label[cell.id]
+
+
+
+
+        
 
 //GENERATE CLASS FILES
 For each thingType in things: 
@@ -108,8 +141,6 @@ Else if cardinality == “N”:
 
 //WRITE ALL GENERATED JAVA FILES TO THE OUTPUT
 Write all generated  .java files to output directory
-
-
 \end{verbatim}
 
 In order to extract the necessary information from the XML file, we read the entire file and organize all the information into structured data via Maps so it could be used to later write the Java files. There are 3 main maps: things, arrows, and labels. The things Map stores UML objects (rectangles or parallelograms), and keeps them separate as normal classes or abstract respectively. The arrows Map stores relationships between classes by inspecting the style of the object. The labels Map stores the associated labels attached to arrows, such as its cardinality or other descriptive text. Overall, the main loop iterates through every element in the diagram and classifies it as either a class, abstract class, relationship, or relationship label. 
@@ -118,9 +149,22 @@ After the information was extracted and organized, a separate class was used to 
 
 The pseudocode logic was not taken from a textbook or external source, but rather it was developed independently after examining the contents of the XML file and determining patterns that recurred with the same type of objects/relations. In a previous course, 2OP3 (Object-Oriented Programming), we learned how to use a FileReader to read data from a file. However, the actual classification and analyzing logic used in this algorithm was independently designed by us.
 
+\newpage
+
 \section{Implement a proof-of-concept solution}
 
+\textbf{Report the inputs and outputs of the examples you used. Again, an example is a model-code pair, stored in the GitHub repo. In every example, the model corresponds to the syntax you developed previously.}
 
+In this example, the input is a UML diagram that represents a hospital management system. The model follows the syntax that we developed earlier. 
+
+A parallelogram labelled Person is an abstract class. Rectangles are regular classes, such as Nurse, Doctor, etc. There are empty triangle arrows from Nurse, Doctor, and Patient to Person. This represents specialization or “is a” relationship. This means that Nurse, Doctor, and Patient inherit from Person. It is not circular, so they satisfy the conditions. There are filled arrows that are labelled with cardinality N from Nurse to Patient and Doctor to Patient, etc. This represents an association relationship, where a nurse or doctor can be associated with multiple patients. The cardinality N means one to many. There is a (1) relationship from Patient to Bill, and Patient to Room. This means that each Patient has exactly one Bill. There is an aggregation relationship between Patient and MedicalRecord, labelled with cardinality of 1. This means that each Patient has exactly one MedicalRecord. 
+
+The output of this model is generated Java classes. The generator creates one Java file per shape in the diagram. Person is an abstract class because it’s a parallelogram, and other classes are regular because they are a rectangle. Each relationship in the UML diagram becomes a field in the Java class that is generated. Cardinality 1 creates a single object, whereas Cardinality N creates a List of that type. For example, Patient.java is generated to extend Person. Patient has a one-to-one relation with Bill, Room, and MedicalRecord; the generated class includes these private fields of type Bill, Room, and MedicalRecord. It also contains a list of Appointments due to cardinality N, as a patient can have many appointments. 
+
+This shows that the generator correctly places the UML diagram logic into code and follows the translational semantics in task 2. 
+
+
+\newpage
 
 \section{Reflections}
 
@@ -128,6 +172,16 @@ The pseudocode logic was not taken from a textbook or external source, but rathe
 
 Extending the code generator in Python instead of Java would be fairly simple. The overall structure of classes, inheritance, and fields is similar. The main change would be adjusting syntax, such as removing type declarations, changing constructors, and adapting list structures. The conceptual model to code would remain mostly the same. 
 Generating Java or Python is easier than C. C does not support classes, inheritance, or objects directly so many concepts in this model would need to be simulated using structure, function pointer, and memory management. This makes the translation more complex and less direct. Java and Python are OOP languages, which map naturally to class diagrams, while C is primarily procedural, so the conceptual model does not translate so easily. 
+
+\textbf{How does your code generator compare to an LLM-based model, e.g., ChatGPT
+conceptually? What are the differences and similarities? What are the benefits and limitations/challenges of your solution and what are the benefits and
+limitations/challenges of using an LLM for generating code? Which one would you use in which situation?}
+
+Our code generator and LLMs can both generate code, but they work in different ways. Our code generator is based on rules and follows them based on our design. For example, rectangles become classes, and an empty triangle arrow is extended. The code generated by our code generator produces the same output every time. It does not guess or add any extra information. LLMs work differently, as they generate code based on what it has learnt from training data. It does not follow the rules till we specify that completely. It can add information we don’t need to the code if the information we gave it was missing or not specified. 
+There are some similarities between them. They both can automate turning UML to code by using the rules given, and they both have knowledge about the structure of the code. They can reduce coding manually. The main differences are that the generator follows the structure given, whereas LLMs can hallucinate and are flexible with the code generated. 
+
+The benefits of the code generator are that it follows the rules of the UML diagram and the generated code matches the diagram exactly. This makes it very reliable. However, it can not handle missing information, as if the diagram is not complete, then the generator can only produce code for whatever is given. The benefits of an LLM are that it can give improvements, handle incomplete information, and provide additional logic. However, it might give the wrong answer as it can hallucinate, and the solution might be inconsistent. Sometimes, it may give code that can compile and run, but the code produced is not what was expected. 
+Our code generator is a better choice when we need the code generated to be consistent, follow rules, and adhere to academic guidelines. LLMs are a better choice when we want to experiment, explore ideas, and generate new ones.
 
 \textbf{Code generators for common design formalisms (e.g., Class Diagrams to Java, Simulunk to C) are readily available. There are domains, however, in which new design formalisms pop up frequently (in order to support experts in expressing their designs in new ways). Such design languages and their supporting tooling are developed in so-called “language workbenches.” Research the Eclipse ecosystem to find the two top language workbenches. One of them allows you to define visual formalisms, the other one allows you to design textual formalisms. The latter are very similar to programming languages. In fact, they can integrate with them (not just generate code for them). Which are these two language workbenches and how would you use them in your term assignment (Catan)?}
 
