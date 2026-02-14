@@ -17,19 +17,56 @@
 \id{The goal of this matrix is to aid your TA verify the satisfaction of requirements. If the table is superficial or too verbose, your TA will have a hard time verifying the completeness of your deliverable, and that will result in lost marks.
 Use the Mising-Partial-Implemented status markers in your final report. Use the code{} command to format file names and Java code elements, such as class names, method names, etc.}
 
-\section{Model a small domain in a drawing tool}
+\section{Model syntax}
 
-\textbf{Document the syntax of your model. This should be, basically, a list in which
-enumerate every shape, arrow, etc and explain what they are. This is the concrete
-syntax, i.e., what do we see when we look at the model. You should define the
-abstract syntax, too, i.e., the underlying essential concepts and their relationships.}
 
-\section{Propose an algorithm to translate models described in your syntax to Java or
-Python code}
+
+\section{Algorithm to translate models code}
 
 \textbf{Document the algorithm in a pseudocode and explain it briefly. Did you draw on a
 previously studied content? If so, which course? If not, did you find the algorithm
 somewhere or did you come up with it?}
+
+\textbf{Pseudocode:}
+
+\begin{verbatim}
+Input: draw.io XML file 
+Output: Generated .java
+
+// holds all classes and abstract classes
+// key stores the type of UML thing (class or abstract), and value stores a list of values and ids
+Declare things that map:
+	Key = UML thing type (“class”, “abstract”)
+	Value = list of (value, thingId)
+
+// holds all arrows
+// key stores the type of relationship(inheritance, aggregation, association)
+// value stores arrow ids
+Declare arrows that map:
+	Key = relationship type (“inheritance”, “aggregation”, “association”)
+Value = list of arrowId
+
+// holds all arrow labels
+// key stores id, and value stores a list of values and arrow ids
+Declare label that map:
+	Key = labelId
+	Value = list of (value, arrowId)
+// initialize the keys for the things map
+things[“abstract”] ← empty ArrayList
+things[“class”] ← empty ArrayList
+
+// initialize the keys for the arrows map
+arrows[“inheritance”] ← empty ArrayList
+arrows[“aggregation”] ← empty ArrayList
+arrows[“association”] ← empty ArrayList
+
+\end{verbatim}
+
+In order to extract the necessary information from the XML file, we read the entire file and organize all the information into structured data via Maps so it could be used to later write the Java files. There are 3 main maps: things, arrows, and labels. The things Map stores UML objects (rectangles or parallelograms), and keeps them separate as normal classes or abstract respectively. The arrows Map stores relationships between classes by inspecting the style of the object. The labels Map stores the associated labels attached to arrows, such as its cardinality or other descriptive text. Overall, the main loop iterates through every element in the diagram and classifies it as either a class, abstract class, relationship, or relationship label. 
+
+After the information was extracted and organized, a separate class was used to analyze that information by using the Extraction API. First, it creates a .java file for every detected class or abstract class and writes the corresponding declaration (abstract or normal) with an empty body. Then, it processes the inheritance relationships and updates all the required child classes so they can extend their parent class. Next, it handles associations and aggregations by adding attributes to the source class based on multiplicity: a single object for 1 and a List for N. Finally, all the generated classes are written to the output directory, which is possible with FileWriter.
+
+The pseudocode logic was not taken from a textbook or external source, but rather it was developed independently after examining the contents of the XML file and determining patterns that recurred with the same type of objects/relations. In a previous course, 2OP3 (Object-Oriented Programming), we learned how to use a FileReader to read data from a file. However, the actual classification and analyzing logic used in this algorithm was independently designed by us.
 
 \section{Implement a proof-of-concept solution}
 
