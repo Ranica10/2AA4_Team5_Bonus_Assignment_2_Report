@@ -1,12 +1,16 @@
 \section{Executive summary}
 
-\id{Summarize the assignment, how it went, general impressions, etc. Delete these blue comments from the final version of your report.}
+This project is a tool that is able to automatically translates UML class diagrams into Java source code. The goal was not to manually implement a specific model, but to create a reusable algorithm that is capable of generating program structure for any model which follows the defined syntax.
 
+First, a modelling language was specified by defining its concrete syntax (visual elements), abstract syntax (conceptual elements), and well-formedness rules. Each element was then given a meaning by mapping it to an equivalent programming construct. For instance, classes and abstract classes were generated from the shapes, inheritance relationships were translated using extends, and associations were implemented as attributes or lists based on cardinality. 
 
+The generator then produced .java files corresponding to each model entity. Overall, the generated code preserved the relationships defined in the diagram and worked for multiple models without needing to change the algorithm.
 
 \newpage
 
 \section{Model syntax}
+
+The syntax of the models is defined by the concrete syntax, abstract syntax, and well-formedness rules. Below is a table summarizing these aspects for our UML class diagrams.
 
 \begin{table}[h]
     \centering
@@ -42,7 +46,6 @@
     \end{tabular}
 \end{table}   
 
-The syntax of the models is defined by the concrete syntax, abstract syntax, and well-formedness rules. Above is a table summarizing these aspects for our UML class diagrams.
 
 \textbf{Translational semantics}
 
